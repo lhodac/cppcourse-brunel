@@ -70,20 +70,27 @@ bool Neuron::update(int currentStep, double I_ext, double poissonFactor)
 			static std::mt19937 gen(random());
 			static std::poisson_distribution<> distrib(poissonFactor*H);
 			setMembranePotential(solveDifferentialEquation(I_ext) + buffer_[0] + distrib(gen)* J_EXCIT);
+				buffer_[0]=0.0;
+
 			}
 		else {
 			setMembranePotential(solveDifferentialEquation(I_ext) +buffer_[0]);
+				buffer_[0]=0.0;
+
 		}
 	}
 	
 	if(isRefractory()){
 		membranePotential_=0.0;
+		buffer_[0]=0.0;
+
 		--refractoryTime_;
 		if (refractoryTime_ <= 0.0) { 
 				refractoryTime_= REFRACTORY_TIME;
 				setRefractory(false);}
 		}
-	buffer_[0]=0.0;		
+		
+		
 	//cout << currentStep << '\t' << membranePotential_ << endl;
 	return isSpiking;	
 }
@@ -91,12 +98,13 @@ bool Neuron::update(int currentStep, double I_ext, double poissonFactor)
 
 double Neuron:: solveDifferentialEquation(double I_ext) const
 {
-	return C1 * membranePotential_ + I_ext * R * C2;
+	return C1 * getMembranePotential() + I_ext * R * C2;
 }
 
 
 double Neuron:: updateBuffer()
 {
+	//cerr << "UPDATE BUFFER" << endl;
 	for (size_t i (1); i < buffer_.size() ; ++i){
 		buffer_[i-1] = buffer_[i];
 		}

@@ -14,7 +14,7 @@ class Network{
 private:
 	std::array<Neuron*, NB_EXCIT+ NB_INHIB> neurons_;	///< Static table of pointers on all the neurons that the network will make interacting
 	Matrice neuronsRelations_;							///< Vector of array of neurons index representing wich one will send current to wich one
-	std::vector<int> NbSpikesPerStep;					///< Dynamic table representing how many spikes occured in the network in one simulation step
+	std::array<int,12000> NbSpikesPerStep;					///< Dynamic table representing how many spikes occured in the network in one simulation step
 	
 public:
 	

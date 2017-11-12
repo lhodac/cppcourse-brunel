@@ -46,6 +46,8 @@ void Network::update(int currentStep,int nbSteps, double I_ext)
 			spike = (neurons_[i]->update(currentStep, I_ext, EXT_NU));
 
 				if (spike){
+					++NbSpikesPerStep[currentStep];
+
 														
 					for(int j(0); j< neuronsRelations_[i].size(); ++j){
 							Type type;
@@ -129,7 +131,7 @@ void Network::update(int currentStep,int nbSteps, double I_ext, int graph)
 	assert(currentStep < nbSteps);
 	while(currentStep < nbSteps)
 		{
-		NbSpikesPerStep.push_back(0);
+		//NbSpikesPerStep.push_back(0);
 				
 		for (int i(0);i <neurons_.size();++i){
 			if (neurons_[i]!=nullptr){
@@ -137,13 +139,12 @@ void Network::update(int currentStep,int nbSteps, double I_ext, int graph)
 
 				if (spike){
 					
-					++NbSpikesPerStep[currentStep];
+					NbSpikesPerStep[currentStep]+=1;
 					
 					if (currentStep> minBoundary and currentStep<maxBoundary ){	sortie << currentStep << '\t' << i << '\n';}
 		
 					for(int j(0); j< neuronsRelations_[i].size(); ++j){
 
-						Type type;
 							if (neurons_[i]->getType() == Excitatory){
 								neurons_[neuronsRelations_[i][j]]->receive(J_EXCIT);
 								}
@@ -155,18 +156,13 @@ void Network::update(int currentStep,int nbSteps, double I_ext, int graph)
 
 			}
 		}
-
-		
+		if (currentStep> minBoundary and currentStep<maxBoundary){
+		sortieNumbers << NbSpikesPerStep[currentStep] << endl;}
 		++currentStep;
-
 		}
 		
 	
 	sortie.close();
-	
-		for (int k(minBoundary); k<maxBoundary ; ++k){					//Allows to print the number of spikes per step (generate histogram with the application Numbers)
-			sortieNumbers << NbSpikesPerStep[k] << endl;
-			}
 	sortieNumbers.close();
 
 }
